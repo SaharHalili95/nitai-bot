@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nitai Bot — בוט תוכן מוצרים לאתרי חשמל</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #0f0f1a;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      padding: 60px 20px 40px;
+      text-align: center;
+      border-bottom: 2px solid #0f3460;
+    }
+
+    header h1 {
+      font-size: 2.8rem;
+      color: #e94560;
+      letter-spacing: 2px;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      color: #a0aec0;
+      margin-top: 12px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #e94560;
+      color: white;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      margin-top: 16px;
+    }
+
+    main {
+      max-width: 900px;
+      width: 100%;
+      padding: 50px 20px;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      margin-bottom: 50px;
+    }
+
+    .card {
+      background: #1a1a2e;
+      border: 1px solid #0f3460;
+      border-radius: 12px;
+      padding: 28px 24px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #e94560;
+    }
+
+    .card .icon { font-size: 2rem; margin-bottom: 12px; }
+    .card h3 { color: #e94560; font-size: 1.1rem; margin-bottom: 8px; }
+    .card p { color: #a0aec0; font-size: 0.95rem; line-height: 1.6; }
+
+    .cta {
+      text-align: center;
+      background: #1a1a2e;
+      border: 1px solid #0f3460;
+      border-radius: 16px;
+      padding: 40px;
+      margin-bottom: 50px;
+    }
+
+    .cta h2 { color: #fff; font-size: 1.6rem; margin-bottom: 12px; }
+    .cta p { color: #a0aec0; margin-bottom: 24px; font-size: 1rem; }
+
+    .btn {
+      display: inline-block;
+      background: #e94560;
+      color: white;
+      text-decoration: none;
+      padding: 14px 36px;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .btn:hover { background: #c73652; transform: scale(1.05); }
+
+    .how {
+      margin-bottom: 50px;
+    }
+
+    .how h2 {
+      color: #fff;
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: #1a1a2e;
+      border-radius: 10px;
+      padding: 20px;
+      border: 1px solid #0f3460;
+    }
+
+    .step-num {
+      background: #e94560;
+      color: white;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .step-text h4 { color: #fff; margin-bottom: 4px; }
+    .step-text p { color: #a0aec0; font-size: 0.9rem; }
+
+    footer {
+      width: 100%;
+      text-align: center;
+      padding: 24px;
+      color: #4a5568;
+      font-size: 0.85rem;
+      border-top: 1px solid #1a1a2e;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🤖 Nitai Bot</h1>
+  <p>בוט טלגרם חכם ליצירת תוכן מוצרים לאתרי חשמל ואלקטרוניקה</p>
+  <span class="badge">Powered by Claude AI</span>
+</header>
+
+<main>
+
+  <div class="features">
+    <div class="card">
+      <div class="icon">📋</div>
+      <h3>תיאור קצר</h3>
+      <p>פסקה שיווקית + 3 יתרונות מרכזיים, מוכנה להדבקה ליד המחיר בדף המוצר.</p>
+    </div>
+    <div class="card">
+      <div class="icon">📄</div>
+      <h3>תיאור מלא</h3>
+      <p>200+ מילים עם כותרות <code>&lt;h3&gt;</code>, מבנה HTML מלא בסגנון KSP / bug.co.il.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🔧</div>
+      <h3>מפרט טכני</h3>
+      <p>טבלת נתונים מדויקת — מידות, הספק, דירוג אנרגטי, חיבורים ועוד.</p>
+    </div>
+    <div class="card">
+      <div class="icon">⚠️</div>
+      <h3>חסרונות ופתרונות</h3>
+      <p>2 חסרונות אמיתיים מביקורות משתמשים, עם פתרון מעשי לכל אחד.</p>
+    </div>
+  </div>
+
+  <div class="cta">
+    <h2>רוצה להתחיל?</h2>
+    <p>פתח את הבוט בטלגרם ושלח שם מוצר, דגם, או מק"ט</p>
+    <a class="btn" href="https://t.me/nitai_products_bot" target="_blank">פתח בטלגרם ▶</a>
+  </div>
+
+  <div class="how">
+    <h2>איך זה עובד?</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <h4>שלח שם מוצר</h4>
+          <p>לדוגמה: "Samsung Galaxy S25" או "מקרר בוש KGN39AIBT"</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <h4>הבוט מחפש באינטרנט</h4>
+          <p>Claude AI מחפש מידע עדכני ומדויק על המוצר בזמן אמת</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <h4>קבל תוכן מוכן</h4>
+          <p>HTML מוכן להדבקה ישירה ב-WordPress — בלי עריכה נוספת</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  &copy; 2026 Nitai Bot · Built with Claude AI · <a href="https://github.com/SaharHalili95/nitai-bot" style="color:#e94560;">GitHub</a>
+</footer>
+
+</body>
+</html>
