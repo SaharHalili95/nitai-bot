@@ -66,8 +66,8 @@ PROMPTS = {
 
 def ask_claude(prompt: str) -> str:
     message = claude.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=1500,
+        model="claude-haiku-4-5-20251001",
+        max_tokens=1024,
         system=SYSTEM_PROMPT,
         tools=[{"type": "web_search_20250305", "name": "web_search"}],
         messages=[{"role": "user", "content": prompt}]
