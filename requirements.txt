@@ -1,0 +1,5 @@
+anthropic==0.89.0
+flask==2.2.5
+flask-cors==6.0.2
+python-dotenv==1.2.2
+gunicorn==21.2.0
