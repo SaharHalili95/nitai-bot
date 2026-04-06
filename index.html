@@ -3,230 +3,414 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nitai Bot — בוט תוכן מוצרים לאתרי חשמל</title>
+  <title>Nitai — מנוע חיפוש מוצרי חשמל</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
-      background: #0f0f1a;
+      background: #0d0d1a;
       color: #e0e0e0;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      direction: rtl;
     }
 
-    header {
-      width: 100%;
-      background: linear-gradient(135deg, #1a1a2e, #16213e);
-      padding: 60px 20px 40px;
+    /* ───── HERO / SEARCH ───── */
+    .hero {
+      background: linear-gradient(160deg, #1a1a2e 0%, #16213e 100%);
+      padding: 60px 20px 50px;
       text-align: center;
-      border-bottom: 2px solid #0f3460;
+      border-bottom: 1px solid #0f3460;
+      transition: padding 0.4s;
     }
 
-    header h1 {
-      font-size: 2.8rem;
+    .hero.compact { padding: 24px 20px; }
+
+    .hero h1 {
+      font-size: 2.6rem;
       color: #e94560;
-      letter-spacing: 2px;
+      margin-bottom: 8px;
+      transition: font-size 0.4s;
     }
 
-    header p {
-      font-size: 1.2rem;
+    .hero.compact h1 { font-size: 1.6rem; }
+
+    .hero p.subtitle {
       color: #a0aec0;
-      margin-top: 12px;
+      margin-bottom: 30px;
+      font-size: 1rem;
+      transition: opacity 0.3s;
     }
 
-    .badge {
-      display: inline-block;
+    .hero.compact p.subtitle { display: none; }
+
+    .search-box {
+      display: flex;
+      max-width: 680px;
+      margin: 0 auto;
+      background: #1e2030;
+      border: 2px solid #0f3460;
+      border-radius: 50px;
+      overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .search-box:focus-within {
+      border-color: #e94560;
+      box-shadow: 0 0 0 4px rgba(233,69,96,0.15);
+    }
+
+    .search-box input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 16px 24px;
+      font-size: 1.05rem;
+      color: #e0e0e0;
+      direction: rtl;
+    }
+
+    .search-box input::placeholder { color: #4a5568; }
+
+    .search-box button {
       background: #e94560;
+      border: none;
       color: white;
-      padding: 4px 14px;
+      padding: 0 28px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    .search-box button:hover { background: #c73652; }
+    .search-box button:disabled { background: #555; cursor: not-allowed; }
+
+    /* ───── RESULTS AREA ───── */
+    #results {
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 20px 60px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: #1a1a2e;
+      border: 1px solid #0f3460;
+      color: #a0aec0;
+      padding: 10px 20px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover { border-color: #e94560; color: #fff; }
+    .tab-btn.active { background: #e94560; border-color: #e94560; color: #fff; }
+
+    /* Panels */
+    .panel { display: none; animation: fadeIn 0.3s ease; }
+    .panel.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .content-card {
+      background: #1a1a2e;
+      border: 1px solid #0f3460;
+      border-radius: 14px;
+      padding: 32px;
+      line-height: 1.8;
+    }
+
+    /* HTML content from Claude */
+    .content-card h3 {
+      color: #e94560;
+      font-size: 1.15rem;
+      margin: 24px 0 10px;
+      border-right: 3px solid #e94560;
+      padding-right: 10px;
+    }
+
+    .content-card h3:first-child { margin-top: 0; }
+
+    .content-card p { color: #cbd5e0; margin-bottom: 14px; }
+
+    .content-card ul {
+      list-style: none;
+      margin: 10px 0 16px;
+    }
+
+    .content-card ul li {
+      color: #cbd5e0;
+      padding: 8px 0;
+      padding-right: 20px;
+      position: relative;
+      border-bottom: 1px solid #0f3460;
+    }
+
+    .content-card ul li:last-child { border-bottom: none; }
+
+    .content-card ul li::before {
+      content: "◆";
+      color: #e94560;
+      position: absolute;
+      right: 0;
+      font-size: 0.6rem;
+      top: 12px;
+    }
+
+    .content-card strong { color: #fff; }
+
+    /* Specs table */
+    .content-card table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+
+    .content-card table th {
+      background: #0f3460;
+      color: #e94560;
+      padding: 12px 16px;
+      text-align: right;
+      font-size: 0.9rem;
+      border: 1px solid #1e2a4a;
+    }
+
+    .content-card table td {
+      padding: 11px 16px;
+      border: 1px solid #1e2a4a;
+      color: #cbd5e0;
+      font-size: 0.95rem;
+    }
+
+    .content-card table tr:nth-child(even) td {
+      background: #151525;
+    }
+
+    /* Copy button */
+    .copy-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 16px;
+      background: transparent;
+      border: 1px solid #0f3460;
+      color: #a0aec0;
+      padding: 8px 18px;
       border-radius: 20px;
       font-size: 0.85rem;
-      margin-top: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
     }
 
-    main {
-      max-width: 900px;
-      width: 100%;
-      padding: 50px 20px;
-    }
+    .copy-btn:hover { border-color: #e94560; color: #e94560; }
+    .copy-btn.copied { border-color: #48bb78; color: #48bb78; }
 
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 24px;
-      margin-bottom: 50px;
-    }
-
-    .card {
-      background: #1a1a2e;
-      border: 1px solid #0f3460;
-      border-radius: 12px;
-      padding: 28px 24px;
-      transition: transform 0.2s, border-color 0.2s;
-    }
-
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: #e94560;
-    }
-
-    .card .icon { font-size: 2rem; margin-bottom: 12px; }
-    .card h3 { color: #e94560; font-size: 1.1rem; margin-bottom: 8px; }
-    .card p { color: #a0aec0; font-size: 0.95rem; line-height: 1.6; }
-
-    .cta {
+    /* Loading */
+    .loading {
       text-align: center;
-      background: #1a1a2e;
-      border: 1px solid #0f3460;
-      border-radius: 16px;
-      padding: 40px;
-      margin-bottom: 50px;
+      padding: 60px 20px;
     }
 
-    .cta h2 { color: #fff; font-size: 1.6rem; margin-bottom: 12px; }
-    .cta p { color: #a0aec0; margin-bottom: 24px; font-size: 1rem; }
-
-    .btn {
-      display: inline-block;
-      background: #e94560;
-      color: white;
-      text-decoration: none;
-      padding: 14px 36px;
-      border-radius: 30px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      transition: background 0.2s, transform 0.2s;
-    }
-
-    .btn:hover { background: #c73652; transform: scale(1.05); }
-
-    .how {
-      margin-bottom: 50px;
-    }
-
-    .how h2 {
-      color: #fff;
-      font-size: 1.5rem;
-      margin-bottom: 24px;
-      text-align: center;
-    }
-
-    .steps {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .step {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      background: #1a1a2e;
-      border-radius: 10px;
-      padding: 20px;
-      border: 1px solid #0f3460;
-    }
-
-    .step-num {
-      background: #e94560;
-      color: white;
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #1e2030;
+      border-top-color: #e94560;
       border-radius: 50%;
-      width: 36px;
-      height: 36px;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading p { color: #a0aec0; font-size: 1rem; }
+    .loading small { color: #4a5568; font-size: 0.85rem; }
+
+    /* Product title */
+    .product-title {
+      font-size: 1.5rem;
+      color: #fff;
+      margin-bottom: 24px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      flex-shrink: 0;
+      gap: 10px;
     }
 
-    .step-text h4 { color: #fff; margin-bottom: 4px; }
-    .step-text p { color: #a0aec0; font-size: 0.9rem; }
+    .product-title span {
+      background: #e94560;
+      color: white;
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: normal;
+    }
 
-    footer {
-      width: 100%;
+    /* Empty state */
+    .empty {
       text-align: center;
-      padding: 24px;
+      padding: 80px 20px;
       color: #4a5568;
-      font-size: 0.85rem;
-      border-top: 1px solid #1a1a2e;
+    }
+
+    .empty .big { font-size: 3rem; margin-bottom: 16px; }
+    .empty p { font-size: 1rem; }
+
+    /* Error */
+    .error-msg {
+      background: rgba(233,69,96,0.1);
+      border: 1px solid #e94560;
+      border-radius: 10px;
+      padding: 20px;
+      color: #e94560;
+      text-align: center;
     }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>🤖 Nitai Bot</h1>
-  <p>בוט טלגרם חכם ליצירת תוכן מוצרים לאתרי חשמל ואלקטרוניקה</p>
-  <span class="badge">Powered by Claude AI</span>
-</header>
-
-<main>
-
-  <div class="features">
-    <div class="card">
-      <div class="icon">📋</div>
-      <h3>תיאור קצר</h3>
-      <p>פסקה שיווקית + 3 יתרונות מרכזיים, מוכנה להדבקה ליד המחיר בדף המוצר.</p>
-    </div>
-    <div class="card">
-      <div class="icon">📄</div>
-      <h3>תיאור מלא</h3>
-      <p>200+ מילים עם כותרות <code>&lt;h3&gt;</code>, מבנה HTML מלא בסגנון KSP / bug.co.il.</p>
-    </div>
-    <div class="card">
-      <div class="icon">🔧</div>
-      <h3>מפרט טכני</h3>
-      <p>טבלת נתונים מדויקת — מידות, הספק, דירוג אנרגטי, חיבורים ועוד.</p>
-    </div>
-    <div class="card">
-      <div class="icon">⚠️</div>
-      <h3>חסרונות ופתרונות</h3>
-      <p>2 חסרונות אמיתיים מביקורות משתמשים, עם פתרון מעשי לכל אחד.</p>
-    </div>
+<div class="hero" id="hero">
+  <h1>🔍 Nitai Search</h1>
+  <p class="subtitle">הזן שם מוצר, דגם, או מק"ט — וקבל דף מוצר מלא מוכן ל-WordPress</p>
+  <div class="search-box">
+    <input
+      type="text"
+      id="searchInput"
+      placeholder='לדוגמה: Samsung Galaxy S25 / מקרר בוש KGN39AIBT'
+      autocomplete="off"
+    />
+    <button id="searchBtn" onclick="doSearch()">חפש</button>
   </div>
+</div>
 
-  <div class="cta">
-    <h2>רוצה להתחיל?</h2>
-    <p>פתח את הבוט בטלגרם ושלח שם מוצר, דגם, או מק"ט</p>
-    <a class="btn" href="https://t.me/nitai_products_bot" target="_blank">פתח בטלגרם ▶</a>
+<div id="results">
+  <div class="empty">
+    <div class="big">⚡</div>
+    <p>חפש מוצר כדי לראות תוצאות</p>
   </div>
+</div>
 
-  <div class="how">
-    <h2>איך זה עובד?</h2>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-text">
-          <h4>שלח שם מוצר</h4>
-          <p>לדוגמה: "Samsung Galaxy S25" או "מקרר בוש KGN39AIBT"</p>
+<script>
+  const input = document.getElementById("searchInput");
+  const btn   = document.getElementById("searchBtn");
+  const hero  = document.getElementById("hero");
+
+  input.addEventListener("keydown", e => { if (e.key === "Enter") doSearch(); });
+
+  async function doSearch() {
+    const product = input.value.trim();
+    if (!product) { input.focus(); return; }
+
+    // Compact hero
+    hero.classList.add("compact");
+    btn.disabled = true;
+    btn.textContent = "מחפש...";
+
+    showLoading(product);
+
+    try {
+      const res = await fetch("https://nitai2026-bot.onrender.com/api/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ product })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError(data.error || "אירעה שגיאה");
+        return;
+      }
+
+      showResults(data);
+    } catch (err) {
+      showError("לא ניתן להתחבר לשרת. ודא שה-server.py פועל.");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "חפש";
+    }
+  }
+
+  function showLoading(product) {
+    document.getElementById("results").innerHTML = `
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>מחפש מידע על <strong>${escHtml(product)}</strong>...</p>
+        <small>Claude AI מחפש באינטרנט, עשוי לקחת 20-40 שניות</small>
+      </div>`;
+  }
+
+  function showError(msg) {
+    document.getElementById("results").innerHTML =
+      `<div class="error-msg">⚠️ ${escHtml(msg)}</div>`;
+  }
+
+  function showResults(data) {
+    const tabs = [
+      { key: "short", label: "📋 תיאור קצר" },
+      { key: "full",  label: "📄 תיאור מלא" },
+      { key: "specs", label: "🔧 מפרט טכני" },
+      { key: "cons",  label: "⚠️ חסרונות" },
+    ];
+
+    const tabsHtml = tabs.map((t, i) =>
+      `<button class="tab-btn ${i===0?'active':''}" onclick="switchTab('${t.key}', this)">${t.label}</button>`
+    ).join("");
+
+    const panelsHtml = tabs.map((t, i) => `
+      <div class="panel ${i===0?'active':''}" id="panel-${t.key}">
+        <div class="content-card" id="content-${t.key}">
+          ${data.results[t.key] || '<p>לא נמצא מידע</p>'}
         </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-text">
-          <h4>הבוט מחפש באינטרנט</h4>
-          <p>Claude AI מחפש מידע עדכני ומדויק על המוצר בזמן אמת</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-text">
-          <h4>קבל תוכן מוכן</h4>
-          <p>HTML מוכן להדבקה ישירה ב-WordPress — בלי עריכה נוספת</p>
-        </div>
-      </div>
-    </div>
-  </div>
+        <button class="copy-btn" onclick="copyHtml('${t.key}')">📋 העתק HTML</button>
+      </div>`
+    ).join("");
 
-</main>
+    document.getElementById("results").innerHTML = `
+      <div class="product-title">
+        ${escHtml(data.product)}
+        <span>מוכן ל-WordPress</span>
+      </div>
+      <div class="tabs">${tabsHtml}</div>
+      ${panelsHtml}`;
+  }
 
-<footer>
-  &copy; 2026 Nitai Bot · Built with Claude AI · <a href="https://github.com/SaharHalili95/nitai-bot" style="color:#e94560;">GitHub</a>
-</footer>
+  function switchTab(key, el) {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+    el.classList.add("active");
+    document.getElementById("panel-" + key).classList.add("active");
+  }
 
+  function copyHtml(key) {
+    const el = document.getElementById("content-" + key);
+    navigator.clipboard.writeText(el.innerHTML).then(() => {
+      const btn = el.nextElementSibling;
+      btn.classList.add("copied");
+      btn.textContent = "✅ הועתק!";
+      setTimeout(() => {
+        btn.classList.remove("copied");
+        btn.textContent = "📋 העתק HTML";
+      }, 2000);
+    });
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+</script>
 </body>
 </html>
