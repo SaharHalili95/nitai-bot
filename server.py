@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-app = Flask(__name__, static_folder=".")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+app = Flask(__name__, static_folder=BASE_DIR)
 CORS(app)
 
 claude = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
@@ -77,7 +78,7 @@ def ask_claude(prompt: str) -> str:
 
 @app.route("/")
 def index():
-    return send_from_directory(".", "search.html")
+    return send_from_directory(BASE_DIR, "search.html")
 
 
 @app.route("/api/search", methods=["POST"])
@@ -98,4 +99,4 @@ def search():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=False, port=5050, host="127.0.0.1")
