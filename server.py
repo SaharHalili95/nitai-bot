@@ -81,21 +81,20 @@ def index():
     return send_from_directory(BASE_DIR, "search.html")
 
 
-@app.route("/api/search", methods=["POST"])
-def search():
+@app.route("/api/section", methods=["POST"])
+def section():
     data = request.get_json()
     product = data.get("product", "").strip()
+    sec = data.get("section", "").strip()
     if not product or len(product) < 2:
         return jsonify({"error": "נא להזין שם מוצר תקין"}), 400
-
-    results = {}
-    for section, prompt_fn in PROMPTS.items():
-        try:
-            results[section] = ask_claude(prompt_fn(product))
-        except Exception as e:
-            results[section] = f"<p>שגיאה בטעינת החלק הזה: {e}</p>"
-
-    return jsonify({"product": product, "results": results})
+    if sec not in PROMPTS:
+        return jsonify({"error": "סקציה לא תקינה"}), 400
+    try:
+        result = ask_claude(PROMPTS[sec](product))
+        return jsonify({"product": product, "section": sec, "content": result})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
