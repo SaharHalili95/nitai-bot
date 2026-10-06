@@ -6,6 +6,8 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
 import anthropic
 
+from prompts import SYSTEM_PROMPT, PROMPTS
+
 load_dotenv()
 
 logging.basicConfig(
@@ -22,69 +24,8 @@ claude = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 user_searches = {}
 
 
-SYSTEM_PROMPT = """System Role: NitaiJR Content Architect for eCommerce
-
-אתה מומחה תוכן בכיר לעולם מוצרי החשמל והאלקטרוניקה.
-תפקידך לייצר דפי מוצר עשירים, שיווקיים וטכניים בעברית על סמך שם דגם או מק"ט.
-התוכן מיועד להטמעה ב-WordPress ומעוצב בסטנדרט של רשתות מובילות (באג/KSP).
-
-כללים:
-- חפש תמיד מידע עדכני ומדויק לפני כתיבה
-- HTML Ready: השתמש בתגיות <h3>, <p>, <ul>, <li>, <strong>
-- שפה: עברית מקצועית. מונחים טכניים באנגלית בסוגריים
-- אל תעתיק — צור תוכן מקורי שנשמע כמומחה מוצר
-- דיוק: הסתמך על נתונים ריאליים. אם הדגם לא מוכר — ציין זאת"""
-
-
 def build_prompt(product: str, section: str) -> str:
-    prompts = {
-        "short": (
-            f"חפש מידע עדכני על: {product}\n\n"
-            "לאחר החיפוש, כתוב Short Description לדף מוצר WordPress בעברית:\n\n"
-            "1. פסקת פתיחה שיווקית: <p> עם 2-3 משפטים המציגים את גולת הכותרת של המוצר</p>\n\n"
-            "2. שלושה יתרונות מרכזיים:\n"
-            "<ul>\n"
-            "<li><strong>[יתרון 1]</strong> — תועלת מידית ללקוח</li>\n"
-            "<li><strong>[יתרון 2]</strong> — תועלת מידית ללקוח</li>\n"
-            "<li><strong>[יתרון 3]</strong> — תועלת מידית ללקוח</li>\n"
-            "</ul>\n\n"
-            "החזר HTML בלבד, ללא הסברים נוספים."
-        ),
-        "full": (
-            f"חפש מידע מעמיק על: {product}\n\n"
-            "לאחר החיפוש, כתוב Full Description לדף מוצר WordPress בעברית — לפחות 200 מילים.\n\n"
-            "מבנה חובה: 3 עד 5 פסקאות, כל אחת עם <h3> וכותרת משנה רלוונטית.\n"
-            "דוגמאות לכותרות: 'ביצועים מרשימים', 'עיצוב חכם', 'חוויית שימוש', 'טכנולוגיה מתקדמת'\n\n"
-            "בכל פסקה: הסבר לא רק מה יש — אלא איך זה עוזר למשתמש.\n"
-            "שלב מונחים טכניים באנגלית בסוגריים כשרלוונטי.\n\n"
-            "החזר HTML בלבד (<h3>, <p>, <strong>), ללא הסברים נוספים."
-        ),
-        "specs": (
-            f"חפש מפרט טכני מלא ומדויק של: {product}\n\n"
-            "לאחר החיפוש, כתוב טבלת מפרט טכני מלאה בעברית בפורמט HTML:\n\n"
-            "<table>\n"
-            "<tr><th>מאפיין</th><th>נתון</th></tr>\n"
-            "<tr><td>דגם</td><td>[ערך]</td></tr>\n"
-            "...\n"
-            "</table>\n\n"
-            "כלול: מידות (גובה/רוחב/עומק), משקל, הספק, דירוג אנרגטי, נפח/קיבולת, "
-            "תוכניות עבודה, חיבורים, מה כלול באריזה, וכל נתון טכני רלוונטי.\n"
-            "אם ערך לא נמצא — כתוב 'לא צוין'.\n"
-            "החזר HTML בלבד, ללא הסברים נוספים."
-        ),
-        "cons": (
-            f"חפש ביקורות ומשוב משתמשים על: {product}\n\n"
-            "לאחר החיפוש, כתוב בעברית 2 חסרונות אמיתיים עם פתרון לכל אחד:\n\n"
-            "<ul>\n"
-            "<li><strong>⚠️ [שם החיסרון]</strong> — הסבר קצר<br>"
-            "<strong>💡 פתרון:</strong> כיצד מתמודדים</li>\n"
-            "<li><strong>⚠️ [שם החיסרון]</strong> — הסבר קצר<br>"
-            "<strong>💡 פתרון:</strong> כיצד מתמודדים</li>\n"
-            "</ul>\n\n"
-            "החזר HTML בלבד, ללא הסברים נוספים."
-        ),
-    }
-    return prompts[section]
+    return PROMPTS[section](product)
 
 
 async def ask_claude(prompt: str) -> str:
