@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 
-from prompts import SYSTEM_PROMPT, PROMPTS
+from prompts import PROMPTS, SYSTEM_PROMPT, strip_code_fence
 
 load_dotenv()
 
@@ -27,7 +27,7 @@ def ask_claude(prompt: str) -> str:
         messages=[{"role": "user", "content": prompt}]
     )
     text_parts = [block.text for block in message.content if hasattr(block, "text")]
-    return "\n".join(text_parts).strip()
+    return strip_code_fence("\n".join(text_parts))
 
 
 @app.route("/")

@@ -6,7 +6,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
 import anthropic
 
-from prompts import SYSTEM_PROMPT, PROMPTS
+from prompts import PROMPTS, SYSTEM_PROMPT, strip_code_fence
 
 load_dotenv()
 
@@ -88,7 +88,7 @@ async def ask_claude(prompt: str) -> str:
         )
         # Extract text from response (may contain tool use blocks)
         text_parts = [block.text for block in message.content if hasattr(block, "text")]
-        return "\n".join(text_parts).strip() or "לא נמצא מידע על המוצר."
+        return strip_code_fence("\n".join(text_parts)) or "לא נמצא מידע על המוצר."
     except Exception as e:
         logger.error(f"Claude API error: {e}")
         return "אירעה שגיאה בעת יצירת התוכן. נסה שוב."

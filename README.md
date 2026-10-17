@@ -74,7 +74,7 @@ pip install -r requirements-dev.txt
 pytest
 ```
 
-39 tests cover the prompts, the Telegram handlers (button data within Telegram's 64-byte limit, HTML escaping of product names, splitting long pages under the 4096-character limit) and the Flask API (validation and error handling). The Claude API is mocked, so no key is needed. CI runs them on every push.
+45 tests cover the prompts (including stripping ```html fences from replies), the Telegram handlers (button data within Telegram's 64-byte limit, HTML escaping of product names, splitting long pages under the 4096-character limit) and the Flask API (validation and error handling). The Claude API is mocked, so no key is needed. CI runs them on every push.
 
 ## Project Structure
 

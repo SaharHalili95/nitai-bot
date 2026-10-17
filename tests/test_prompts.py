@@ -1,6 +1,6 @@
 import pytest
 
-from prompts import PROMPTS, SYSTEM_PROMPT
+from prompts import PROMPTS, SYSTEM_PROMPT, strip_code_fence
 
 
 def test_all_four_sections_exist():
@@ -30,3 +30,21 @@ def test_specs_ask_for_a_table_and_missing_values():
 def test_system_prompt_requires_hebrew_and_html():
     assert "עברית" in SYSTEM_PROMPT
     assert "HTML" in SYSTEM_PROMPT
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        "```html\n<p>שלום</p>\n```",
+        "```\n<p>שלום</p>\n```",
+        "  ```html\n<p>שלום</p>```  ",
+        "<p>שלום</p>",
+    ],
+)
+def test_code_fences_are_removed(raw):
+    assert strip_code_fence(raw) == "<p>שלום</p>"
+
+
+def test_fences_inside_the_text_are_kept():
+    text = "<p>a</p>\n```js\nx\n```\n<p>b</p>"
+    assert strip_code_fence(text) == text

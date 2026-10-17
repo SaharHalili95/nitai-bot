@@ -48,3 +48,12 @@ def test_index_serves_the_search_page(client):
     res = client.get("/")
     assert res.status_code == 200
     assert b"<html" in res.data.lower()
+
+
+def test_claude_reply_is_returned_without_code_fences(monkeypatch):
+    from types import SimpleNamespace
+    from unittest.mock import MagicMock
+
+    reply = SimpleNamespace(content=[SimpleNamespace(text="```html\n<p>x</p>\n```")])
+    monkeypatch.setattr(server.claude.messages, "create", MagicMock(return_value=reply))
+    assert server.ask_claude("prompt") == "<p>x</p>"

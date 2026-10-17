@@ -5,6 +5,8 @@ Used by both bot.py (Telegram) and server.py (web UI) - previously this
 whole file was duplicated verbatim in both entry points.
 """
 
+import re
+
 SYSTEM_PROMPT = """System Role: NitaiJR Content Architect for eCommerce
 
 אתה מומחה תוכן בכיר לעולם מוצרי החשמל והאלקטרוניקה.
@@ -74,6 +76,13 @@ def _cons(product: str) -> str:
         "</ul>\n\n"
         "החזר HTML בלבד, ללא הסברים נוספים."
     )
+
+
+def strip_code_fence(text: str) -> str:
+    """Claude sometimes wraps the HTML in ```html fences, which would be pasted into WordPress as-is."""
+    text = text.strip()
+    match = re.fullmatch(r"```[a-zA-Z]*\s*\n(.*?)\n?\s*```", text, re.DOTALL)
+    return match.group(1).strip() if match else text
 
 
 PROMPTS = {
